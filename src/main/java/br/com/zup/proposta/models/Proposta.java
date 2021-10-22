@@ -30,7 +30,7 @@ public class Proposta {
     private BigDecimal salario;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String endereco;
 
     @NotBlank

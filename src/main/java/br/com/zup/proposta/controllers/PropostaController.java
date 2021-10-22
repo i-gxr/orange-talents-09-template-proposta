@@ -34,6 +34,9 @@ public class PropostaController {
 
     @PostMapping
     public ResponseEntity<?> insert(@RequestBody @Valid PropostaRequest request) {
+        if (repository.existsByDocumento(request.getDocumento()))
+            throw new DocumentoJaExistenteException();
+
         Estado estado = estadoRepository.findById(request.getEstadoId()).orElseThrow(EstadoNaoEncontradoException::new);
         Proposta proposta = request.toModel(estado);
         repository.save(proposta);

@@ -5,6 +5,8 @@ import org.springframework.data.repository.*;
 
 public interface PropostaRepository extends CrudRepository<Proposta, Long> {
 
+    boolean existsByDocumento (String documento);
 
+    boolean existsByEmail (String email);
 
 }

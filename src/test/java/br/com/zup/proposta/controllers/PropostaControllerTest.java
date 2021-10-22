@@ -1,5 +1,6 @@
 package br.com.zup.proposta.controllers;
 
+import br.com.zup.proposta.controllers.exceptions.*;
 import br.com.zup.proposta.controllers.requests.*;
 import br.com.zup.proposta.models.*;
 import br.com.zup.proposta.repositories.*;
@@ -60,7 +61,7 @@ class PropostaControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(propostaRequest))
         ).andExpect(MockMvcResultMatchers.status().is(201)
-        ).andExpect(MockMvcResultMatchers.header().string("Location", "http://localhost/api/propostas/1"));
+        ).andExpect(MockMvcResultMatchers.header().string("Location", "http://localhost/api/propostas/2"));
     }
 
     @ParameterizedTest
@@ -71,6 +72,16 @@ class PropostaControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(propostaRequest))
         ).andExpect(MockMvcResultMatchers.status().is(400));
+    }
+
+    @Test
+    void insertShouldReturnUnprocessableEntityStatusWhenDocumentoAlreadyInserted() throws Exception {
+        PropostaRequest propostaRequest = new PropostaRequest("Igor Silva", "51304154009", "igor@email.com", new BigDecimal("2500.00"), "R. Zup, 66", "Poá", estado.getId());
+        repository.save(propostaRequest.toModel(estado));
+        mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(propostaRequest))
+        ).andExpect(MockMvcResultMatchers.status().is(422));
     }
 
     @ParameterizedTest
