@@ -1,4 +1,4 @@
-package br.com.zup.proposta.controllers.exceptions.dto.validations;
+package br.com.zup.proposta.exceptions.dto.validations;
 
 import java.util.*;
 

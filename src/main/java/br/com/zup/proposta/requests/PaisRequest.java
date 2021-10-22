@@ -1,4 +1,4 @@
-package br.com.zup.proposta.controllers.requests;
+package br.com.zup.proposta.requests;
 
 import br.com.zup.proposta.models.*;
 import com.fasterxml.jackson.annotation.*;

@@ -1,9 +1,7 @@
-package br.com.zup.proposta.controllers.requests;
+package br.com.zup.proposta.requests;
 
 import br.com.zup.proposta.models.*;
-import br.com.zup.proposta.repositories.*;
 
-import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.*;
 
@@ -44,10 +42,6 @@ public class PropostaRequest {
 
     public String getDocumento() {
         return documento;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public Long getEstadoId() {

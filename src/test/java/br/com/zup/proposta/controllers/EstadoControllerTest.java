@@ -1,6 +1,6 @@
 package br.com.zup.proposta.controllers;
 
-import br.com.zup.proposta.controllers.requests.*;
+import br.com.zup.proposta.requests.*;
 import br.com.zup.proposta.models.*;
 import br.com.zup.proposta.repositories.*;
 import com.google.gson.*;

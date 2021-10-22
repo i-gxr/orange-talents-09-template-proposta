@@ -1,6 +1,7 @@
-package br.com.zup.proposta.controllers.exceptions;
+package br.com.zup.proposta.handlers;
 
-import br.com.zup.proposta.controllers.exceptions.dto.validations.*;
+import br.com.zup.proposta.exceptions.*;
+import br.com.zup.proposta.exceptions.dto.validations.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.*;
 import org.springframework.context.i18n.*;

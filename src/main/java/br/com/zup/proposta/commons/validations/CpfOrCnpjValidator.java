@@ -1,7 +1,7 @@
 package br.com.zup.proposta.commons.validations;
 
 import br.com.zup.proposta.commons.validations.utils.*;
-import br.com.zup.proposta.controllers.requests.*;
+import br.com.zup.proposta.requests.*;
 import org.springframework.stereotype.*;
 import org.springframework.validation.*;
 

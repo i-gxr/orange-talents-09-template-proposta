@@ -1,4 +1,4 @@
-package br.com.zup.proposta.controllers.exceptions;
+package br.com.zup.proposta.exceptions;
 
 public class BussinessException extends RuntimeException {
 
