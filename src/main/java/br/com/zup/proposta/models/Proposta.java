@@ -1,7 +1,7 @@
 package br.com.zup.proposta.models;
 
-import br.com.zup.proposta.responses.*;
 import br.com.zup.proposta.models.enums.*;
+import br.com.zup.proposta.responses.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -93,6 +93,21 @@ public class Proposta {
 
     public void connectCartao(Cartao cartao) {
         this.cartao = cartao;
+    }
+
+    public PropostaResponse toResponse() {
+        return new PropostaResponse(
+                this.nome,
+                this.documento,
+                this.email,
+                this.salario,
+                this.statusProposta.toString(),
+                this.endereco,
+                this.cidade,
+                this.estado.getNome(),
+                this.estado.getPais().getNome(),
+                this.cartao.getNumeroCartao()
+        );
     }
 
 }

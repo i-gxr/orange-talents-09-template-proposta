@@ -1,7 +1,5 @@
 package br.com.zup.proposta.models;
 
-import com.fasterxml.jackson.annotation.*;
-
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.*;

@@ -1,7 +1,5 @@
 package br.com.zup.proposta.models;
 
-import br.com.zup.proposta.responses.*;
-
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.*;

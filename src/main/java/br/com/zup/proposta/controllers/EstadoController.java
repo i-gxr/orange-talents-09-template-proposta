@@ -1,9 +1,9 @@
 package br.com.zup.proposta.controllers;
 
 import br.com.zup.proposta.exceptions.*;
-import br.com.zup.proposta.requests.*;
 import br.com.zup.proposta.models.*;
 import br.com.zup.proposta.repositories.*;
+import br.com.zup.proposta.requests.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;

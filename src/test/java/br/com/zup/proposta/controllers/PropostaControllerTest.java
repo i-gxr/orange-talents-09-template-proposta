@@ -1,10 +1,10 @@
 package br.com.zup.proposta.controllers;
 
+import br.com.zup.proposta.exceptions.*;
 import br.com.zup.proposta.models.*;
 import br.com.zup.proposta.models.enums.*;
 import br.com.zup.proposta.repositories.*;
 import br.com.zup.proposta.requests.*;
-import br.com.zup.proposta.services.*;
 import com.google.gson.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.*;
 import org.springframework.boot.test.context.*;
-import org.springframework.boot.test.mock.mockito.*;
 import org.springframework.http.*;
 import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.*;
@@ -199,6 +198,25 @@ class PropostaControllerTest {
         Proposta proposta = repository.findByDocumento(propostaRequest.getDocumento()).get();
         Assertions.assertEquals(StatusProposta.NAO_ELEGIVEL, proposta.getStatusProposta());
         Assertions.assertNull(proposta.getCartao());
+    }
+
+    @Test
+    void findByIdShouldReturnCreatedStatusAndBodyWhenIdFromPropostaExisting() throws Exception {
+        PropostaRequest propostaRequest = new PropostaRequest("Igor Silva", "26594581031", "igor@email.com", new BigDecimal("2500.00"), "R. Zup, 66", "Poá", estado.getId());
+        mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(propostaRequest))).andReturn();
+
+        Proposta proposta = repository.findByDocumento("26594581031").orElseThrow(PropostaNaoEncontradaException::new);
+        mockMvc.perform(MockMvcRequestBuilders.get(uri + "/" + proposta.getId()))
+                .andExpect(MockMvcResultMatchers.status().is(200))
+                .andExpect(MockMvcResultMatchers.content().json(gson.toJson(proposta.toResponse())));
+    }
+
+    @Test
+    void findByIdShouldReturnNotFoundStatusWhenIdFromPropostaDoesNotExist() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get(uri + "/" + 1000L))
+                .andExpect(MockMvcResultMatchers.status().is(404));
     }
 
 }

@@ -17,7 +17,6 @@ import org.springframework.web.servlet.support.*;
 
 import javax.validation.*;
 import java.net.*;
-import java.util.*;
 
 @RestController
 @RequestMapping("/api/propostas")
@@ -41,6 +40,12 @@ public class PropostaController {
     @InitBinder
     public void init(WebDataBinder binder) {
         binder.addValidators(cpfOrCnpjValidator);
+    }
+
+    @GetMapping("/{id}")
+    public PropostaResponse findById(@PathVariable Long id) {
+        Proposta proposta = repository.findById(id).orElseThrow(PropostaNaoEncontradaException::new);
+        return proposta.toResponse();
     }
 
     @PostMapping
