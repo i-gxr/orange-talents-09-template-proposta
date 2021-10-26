@@ -7,7 +7,8 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.*;
 
-@Entity(name = "tb_proposta")
+@Entity
+@Table(name = "tb_proposta")
 public class Proposta {
 
     @Id
@@ -36,7 +37,7 @@ public class Proposta {
     private StatusProposta statusProposta;
 
     @NotBlank
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String endereco;
 
     @NotBlank
@@ -45,6 +46,10 @@ public class Proposta {
 
     @ManyToOne
     private Estado estado;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "numero_cartao")
+    private Cartao cartao;
 
     @Deprecated
     public Proposta() {}
@@ -71,13 +76,23 @@ public class Proposta {
         return documento;
     }
 
-    public void setStatusProposta(AnaliseResponse analiseResponse) {
-        if (analiseResponse.getResultadoSolicitacao().equalsIgnoreCase("SEM_RESTRICAO") &&
-            analiseResponse.getDocumento().equalsIgnoreCase(this.documento) &&
-            analiseResponse.getIdProposta().equalsIgnoreCase(this.id.toString()))
+    public StatusProposta getStatusProposta() {
+        return statusProposta;
+    }
+
+    public Cartao getCartao() {
+        return cartao;
+    }
+
+    public void setStatusProposta(String resultadoSolicitacao) {
+        if (resultadoSolicitacao.equalsIgnoreCase("SEM_RESTRICAO"))
             this.statusProposta = StatusProposta.ELEGIVEL;
         else
             this.statusProposta = StatusProposta.NAO_ELEGIVEL;
+    }
+
+    public void connectCartao(Cartao cartao) {
+        this.cartao = cartao;
     }
 
 }

@@ -66,6 +66,14 @@ public class ControllerExceptionHandler {
         return response;
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ServicoNaoDisponivelException.class)
+    public Map<String, String> handleServicoNaoDisponivelError(BussinessException e) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message:", e.getMessage());
+        return response;
+    }
+
     private ValidationErrorsOutputDto buildValidationErrors(List<ObjectError> globalErrors, List<FieldError> fieldErrors) {
         ValidationErrorsOutputDto validationErrors = new ValidationErrorsOutputDto();
         globalErrors.forEach(error -> validationErrors.addError(getErrorMessage(error)));

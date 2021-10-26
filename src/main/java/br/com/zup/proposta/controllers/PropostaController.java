@@ -2,20 +2,22 @@ package br.com.zup.proposta.controllers;
 
 import br.com.zup.proposta.commons.validations.*;
 import br.com.zup.proposta.exceptions.*;
+import br.com.zup.proposta.models.*;
+import br.com.zup.proposta.models.enums.*;
+import br.com.zup.proposta.repositories.*;
 import br.com.zup.proposta.requests.*;
 import br.com.zup.proposta.responses.*;
 import br.com.zup.proposta.services.*;
-import br.com.zup.proposta.models.*;
-import br.com.zup.proposta.repositories.*;
+import feign.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.*;
 
-import javax.transaction.*;
 import javax.validation.*;
 import java.net.*;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/propostas")
@@ -31,6 +33,9 @@ public class PropostaController {
     private CpfOrCnpjValidator cpfOrCnpjValidator;
 
     @Autowired
+    private CartaoService cartaoService;
+
+    @Autowired
     private ConsultaFinanceiraService consultaFinanceiraService;
 
     @InitBinder
@@ -39,7 +44,6 @@ public class PropostaController {
     }
 
     @PostMapping
-    @Transactional
     public ResponseEntity<?> insert(@RequestBody @Valid PropostaRequest request) {
         if (repository.existsByDocumento(request.getDocumento()))
             throw new DocumentoJaExistenteException();
@@ -48,10 +52,23 @@ public class PropostaController {
         Proposta proposta = request.toModel(estado);
         repository.save(proposta);
 
-        AnaliseResponse analiseResponse = consultaFinanceiraService.postAnaliseRequest(
-                new AnaliseRequest(proposta.getDocumento(), proposta.getNome(), proposta.getId().toString()));
+        try {
+            AnaliseResponse analiseResponse = consultaFinanceiraService.postAnaliseRequest(
+                    new AnaliseRequest(proposta.getDocumento(), proposta.getNome(), proposta.getId().toString()));
+            proposta.setStatusProposta(analiseResponse.getResultadoSolicitacao());
+        }
+            catch (FeignException.UnprocessableEntity e) {
+                proposta.setStatusProposta("COM_RESTRICAO");
+            }
+            catch (FeignException.InternalServerError e) {
+                throw new ServicoNaoDisponivelException();
+            }
+                finally {
+                    repository.save(proposta);
+                }
 
-        proposta.setStatusProposta(analiseResponse);
+        if (proposta.getStatusProposta().equals(StatusProposta.ELEGIVEL))
+            cartaoService.connectProposta(new AssociacaoCartaoRequest(proposta.getDocumento(), proposta.getNome(), proposta.getId().toString()));
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()

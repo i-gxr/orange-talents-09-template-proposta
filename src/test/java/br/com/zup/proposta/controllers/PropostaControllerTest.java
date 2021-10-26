@@ -1,8 +1,10 @@
 package br.com.zup.proposta.controllers;
 
-import br.com.zup.proposta.requests.*;
 import br.com.zup.proposta.models.*;
+import br.com.zup.proposta.models.enums.*;
 import br.com.zup.proposta.repositories.*;
+import br.com.zup.proposta.requests.*;
+import br.com.zup.proposta.services.*;
 import com.google.gson.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -10,6 +12,7 @@ import org.junit.jupiter.params.provider.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.boot.test.autoconfigure.web.servlet.*;
 import org.springframework.boot.test.context.*;
+import org.springframework.boot.test.mock.mockito.*;
 import org.springframework.http.*;
 import org.springframework.test.web.servlet.*;
 import org.springframework.test.web.servlet.request.*;
@@ -60,7 +63,7 @@ class PropostaControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(propostaRequest))
         ).andExpect(MockMvcResultMatchers.status().is(201)
-        ).andExpect(MockMvcResultMatchers.header().string("Location", "http://localhost/api/propostas/2"));
+        ).andExpect(MockMvcResultMatchers.header().string("Location", "http://localhost/api/propostas/3"));
     }
 
     @ParameterizedTest
@@ -154,6 +157,48 @@ class PropostaControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(propostaRequest))
         ).andExpect(MockMvcResultMatchers.status().is(400));
+    }
+
+    @Test
+    void insertShouldReturStatusPropostaElegivelWhenDocumentoHasNoRestriction() throws Exception {
+        PropostaRequest propostaRequest = new PropostaRequest("Igor Silva", "11130223027", "igor@email.com", new BigDecimal("2500.00"), "R. Zup, 66", "Poá", estado.getId());
+        mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(propostaRequest)));
+        Proposta proposta = repository.findByDocumento(propostaRequest.getDocumento()).get();
+        Assertions.assertEquals(StatusProposta.ELEGIVEL, proposta.getStatusProposta());
+    }
+
+    @Test
+    void insertShouldReturStatusPropostaNaoElegivelWhenDocumentoHasRestriction() throws Exception {
+        PropostaRequest propostaRequest = new PropostaRequest("Igor Silva", "34874240020", "igor@email.com", new BigDecimal("2500.00"), "R. Zup, 66", "Poá", estado.getId());
+        mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(propostaRequest)));
+        Proposta proposta = repository.findByDocumento(propostaRequest.getDocumento()).get();
+        Assertions.assertEquals(StatusProposta.NAO_ELEGIVEL, proposta.getStatusProposta());
+    }
+
+    @Test
+    void insertShouldReturnPropostaAttachedCartaoWhenStatusPropostaIsElegivel() throws Exception {
+        PropostaRequest propostaRequest = new PropostaRequest("Igor Silva", "11130223027", "igor@email.com", new BigDecimal("2500.00"), "R. Zup, 66", "Poá", estado.getId());
+        mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(propostaRequest)));
+        Proposta proposta = repository.findByDocumento(propostaRequest.getDocumento()).get();
+        Assertions.assertEquals(StatusProposta.ELEGIVEL, proposta.getStatusProposta());
+        Assertions.assertNotNull(proposta.getCartao());
+    }
+
+    @Test
+    void insertShouldReturnPropostaAttachedCartaoNullWhenStatusPropostaIsNaoElegivel() throws Exception {
+        PropostaRequest propostaRequest = new PropostaRequest("Igor Silva", "34874240020", "igor@email.com", new BigDecimal("2500.00"), "R. Zup, 66", "Poá", estado.getId());
+        mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(gson.toJson(propostaRequest)));
+        Proposta proposta = repository.findByDocumento(propostaRequest.getDocumento()).get();
+        Assertions.assertEquals(StatusProposta.NAO_ELEGIVEL, proposta.getStatusProposta());
+        Assertions.assertNull(proposta.getCartao());
     }
 
 }
