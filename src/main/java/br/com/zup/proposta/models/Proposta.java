@@ -84,6 +84,10 @@ public class Proposta {
         return cartao;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setStatusProposta(String resultadoSolicitacao) {
         if (resultadoSolicitacao.equalsIgnoreCase("SEM_RESTRICAO"))
             this.statusProposta = StatusProposta.ELEGIVEL;
@@ -106,7 +110,7 @@ public class Proposta {
                 this.cidade,
                 this.estado.getNome(),
                 this.estado.getPais().getNome(),
-                this.cartao.getNumeroCartao()
+                this.cartao != null ? this.cartao.getNumeroCartao() : null
         );
     }
 

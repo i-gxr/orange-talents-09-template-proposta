@@ -72,9 +72,6 @@ public class PropostaController {
                     repository.save(proposta);
                 }
 
-        if (proposta.getStatusProposta().equals(StatusProposta.ELEGIVEL))
-            cartaoService.connectProposta(new AssociacaoCartaoRequest(proposta.getDocumento(), proposta.getNome(), proposta.getId().toString()));
-
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")

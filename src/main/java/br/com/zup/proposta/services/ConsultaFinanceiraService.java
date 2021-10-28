@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.*;
 
-@FeignClient(name = "consultaFinanceiraService", url = "http://localhost:9999/api/solicitacao")
+@FeignClient(name = "consultaFinanceiraService", url = "${proposta.external-api-consulta-url}")
 public interface ConsultaFinanceiraService {
 
     @PostMapping(consumes = "application/json")

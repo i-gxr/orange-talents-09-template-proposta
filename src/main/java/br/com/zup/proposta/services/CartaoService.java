@@ -21,18 +21,17 @@ public class CartaoService {
     @Autowired
     private PropostaRepository propostaRepository;
 
-    public void connectProposta(AssociacaoCartaoRequest associacaoCartaoRequest) {
-        AssociacaoCartaoResponse response = associacaoCartaoService.postAssociacaoCartaoRequest(associacaoCartaoRequest);
-        Proposta proposta = propostaRepository.findById(Long.parseLong(response.getIdProposta())).orElseThrow(PropostaNaoEncontradaException::new);
+    public void connectProposta(Proposta proposta) {
+        AssociacaoCartaoResponse response = associacaoCartaoService.getAssociacaoCartaoRequest(proposta.getId().toString());
         Cartao cartao = response.toModel(proposta);
         proposta.connectCartao(cartao);
         propostaRepository.save(proposta);
     }
 
-    @Scheduled(fixedRate = 15000)
+    @Scheduled(fixedRateString = "${proposta.external-api.period-perform-task}")
     public void connectPropostasWithoutCartao() {
         List<Proposta> propostas = propostaRepository.findAllByCartaoNumeroCartaoIsNullAndStatusProposta(StatusProposta.ELEGIVEL);
-        propostas.forEach(p -> connectProposta(new AssociacaoCartaoRequest(p.getDocumento(), p.getNome(), p.getId().toString())));
+        propostas.forEach(this::connectProposta);
     }
 
 }
