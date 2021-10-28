@@ -31,7 +31,7 @@ class CartaoServiceTest {
     private CartaoService cartaoService;
 
     @Test
-    void deveAssociarCartaoAUmaPropostaElegivel() {
+    void connectPropostaShouldReturnPropostaWithCartaoWhenStatusPropostaIsElegivelAndDontHaveCartao() {
         Proposta propostaElegivel = new Proposta("Igor Silva", "51304154009", "igor@email.com", new BigDecimal("2500.00"), "R. Zup, 66", "Poá", null);
         propostaRepository.save(propostaElegivel);
         propostaElegivel.setStatusProposta("SEM_RESTRICAO");
@@ -39,6 +39,16 @@ class CartaoServiceTest {
         cartaoService.connectPropostasWithoutCartao();
         Optional<Proposta> optionalProposta = propostaRepository.findById(propostaElegivel.getId());
         Assertions.assertNotNull(optionalProposta.get().getCartao());
+    }
+
+    @Test
+    void connectPropostaShouldReturnPropostaWithoutCartaoWhenStatusPropostaIsNaoElegivel() {
+        Proposta propostaNaoElegivel = new Proposta("Igor Silva", "33986752390", "igor@email.com", new BigDecimal("2500.00"), "R. Zup, 66", "Poá", null);
+        propostaRepository.save(propostaNaoElegivel);
+        propostaNaoElegivel.setStatusProposta("COM_RESTRICAO");
+        cartaoService.connectPropostasWithoutCartao();
+        Optional<Proposta> optionalProposta = propostaRepository.findById(propostaNaoElegivel.getId());
+        Assertions.assertNull(optionalProposta.get().getCartao());
     }
 
 }

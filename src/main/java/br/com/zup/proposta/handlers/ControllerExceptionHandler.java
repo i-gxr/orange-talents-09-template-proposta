@@ -82,6 +82,14 @@ public class ControllerExceptionHandler {
         return response;
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CartaoNaoEncontradoException.class)
+    public Map<String, String> handleCartaoNaoEncontradoError(BussinessException e) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message:", e.getMessage());
+        return response;
+    }
+
     private ValidationErrorsOutputDto buildValidationErrors(List<ObjectError> globalErrors, List<FieldError> fieldErrors) {
         ValidationErrorsOutputDto validationErrors = new ValidationErrorsOutputDto();
         globalErrors.forEach(error -> validationErrors.addError(getErrorMessage(error)));
