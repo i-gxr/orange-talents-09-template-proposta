@@ -61,6 +61,7 @@ services:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: Pa55w0rd
       POSTGRES_PORT_5432_TCP_ADDR: 127.0.0.1
+      # KEYCLOAK_FRONTEND_URL: http://localhost:8080/auth
     restart: on-failure
 
   analise:
@@ -158,6 +159,8 @@ services:
       DB_PASSWORD: admin
       API_CARTOES: http://contas:8888/api/cartoes
       API_CONSULTA_FINANCEIRA: http://analise:9999/api/solicitacao
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/auth/realms/proposta
+      KEYCLOAK_JWKS_URI: http://keycloak:8080/auth/realms/proposta/protocol/openid-connect/certs
 
 volumes:
   grafana-volume:
