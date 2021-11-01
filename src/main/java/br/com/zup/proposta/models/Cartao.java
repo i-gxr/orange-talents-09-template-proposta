@@ -72,8 +72,12 @@ public class Cartao {
         return numeroCartao;
     }
 
+    public boolean isBloqueado() {
+        return this.bloqueios.stream().anyMatch(BloqueioCartao::isAtivo);
+    }
+
     public void addBloqueios(BloqueioCartao bloqueioCartao) {
-        if (this.bloqueios.stream().anyMatch(b -> b.isAtivo()))
+        if (isBloqueado())
             throw new CartaoBloqueadoException();
         this.bloqueios.add(bloqueioCartao);
     }

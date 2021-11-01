@@ -65,7 +65,7 @@ public class PropostaController {
             catch (FeignException.UnprocessableEntity e) {
                 proposta.setStatusProposta("COM_RESTRICAO");
             }
-            catch (FeignException.InternalServerError e) {
+            catch (FeignException e) {
                 throw new ServicoNaoDisponivelException();
             }
                 finally {
