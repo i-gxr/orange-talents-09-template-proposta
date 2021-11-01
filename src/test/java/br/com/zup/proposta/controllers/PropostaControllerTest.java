@@ -25,7 +25,7 @@ import javax.transaction.*;
 import java.math.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @Transactional
 class PropostaControllerTest {
 

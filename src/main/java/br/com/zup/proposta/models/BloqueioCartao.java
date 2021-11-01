@@ -10,28 +10,33 @@ import java.util.*;
 public class BloqueioCartao {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @NotBlank
     @Column(nullable = false)
-    private LocalDateTime bloqueadoEm;
+    private LocalDateTime bloqueadoEm = LocalDateTime.now();
 
     @NotBlank
     @Column(nullable = false)
     private String sistemaResponsavel;
 
-    @NotNull
+    @NotBlank
     @Column(nullable = false)
-    private boolean ativo;
+    private String ipSolicitante;
+
+    @Column(nullable = false)
+    private boolean ativo = true;
 
     @Deprecated
     public BloqueioCartao() {}
 
-    public BloqueioCartao(String id, LocalDateTime bloqueadoEm, String sistemaResponsavel, boolean ativo) {
-        this.id = id;
-        this.bloqueadoEm = bloqueadoEm;
+    public BloqueioCartao(String sistemaResponsavel, String ipSolicitante) {
         this.sistemaResponsavel = sistemaResponsavel;
-        this.ativo = ativo;
+        this.ipSolicitante = ipSolicitante;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
     }
 
     @Override
@@ -39,12 +44,12 @@ public class BloqueioCartao {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BloqueioCartao that = (BloqueioCartao) o;
-        return ativo == that.ativo && Objects.equals(id, that.id) && Objects.equals(bloqueadoEm, that.bloqueadoEm) && Objects.equals(sistemaResponsavel, that.sistemaResponsavel);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, bloqueadoEm, sistemaResponsavel, ativo);
+        return Objects.hash(id);
     }
 
 }

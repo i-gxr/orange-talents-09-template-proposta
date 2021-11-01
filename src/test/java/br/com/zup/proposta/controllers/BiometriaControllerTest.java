@@ -18,7 +18,7 @@ import java.time.*;
 import java.util.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @Transactional
 class BiometriaControllerTest {
 

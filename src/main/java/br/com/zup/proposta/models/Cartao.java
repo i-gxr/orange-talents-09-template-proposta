@@ -1,5 +1,7 @@
 package br.com.zup.proposta.models;
 
+import br.com.zup.proposta.exceptions.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.*;
@@ -68,6 +70,12 @@ public class Cartao {
 
     public String getNumeroCartao() {
         return numeroCartao;
+    }
+
+    public void addBloqueios(BloqueioCartao bloqueioCartao) {
+        if (this.bloqueios.stream().anyMatch(b -> b.isAtivo()))
+            throw new CartaoBloqueadoException();
+        this.bloqueios.add(bloqueioCartao);
     }
 
 }

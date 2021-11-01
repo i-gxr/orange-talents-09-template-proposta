@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.result.*;
 import javax.transaction.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @Transactional
 class PaisControllerTest {
 

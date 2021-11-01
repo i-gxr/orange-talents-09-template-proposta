@@ -90,6 +90,14 @@ public class ControllerExceptionHandler {
         return response;
     }
 
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(CartaoBloqueadoException.class)
+    public Map<String, String> handleCartaoBloqueadoError(BussinessException e) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message:", e.getMessage());
+        return response;
+    }
+
     private ValidationErrorsOutputDto buildValidationErrors(List<ObjectError> globalErrors, List<FieldError> fieldErrors) {
         ValidationErrorsOutputDto validationErrors = new ValidationErrorsOutputDto();
         globalErrors.forEach(error -> validationErrors.addError(getErrorMessage(error)));
