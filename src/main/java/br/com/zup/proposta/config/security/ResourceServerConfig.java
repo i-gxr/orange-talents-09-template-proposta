@@ -17,6 +17,7 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.GET, "/propostas/**").hasAuthority("SCOPE_proposta-scope")
                         .antMatchers(HttpMethod.POST, "/propostas/**").hasAuthority("SCOPE_proposta-scope")
                         .antMatchers(HttpMethod.POST, "/biometrias/**").hasAuthority("SCOPE_proposta-scope")
+                        .antMatchers(HttpMethod.POST, "/actuator/**").hasAuthority("SCOPE_proposta-scope")
                         .anyRequest().authenticated()
         ).oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
     }

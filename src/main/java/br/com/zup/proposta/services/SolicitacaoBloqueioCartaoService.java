@@ -10,6 +10,6 @@ import javax.validation.constraints.*;
 public interface SolicitacaoBloqueioCartaoService {
 
     @PostMapping(consumes = "application/json")
-    SolicitacaoBloqueioCartaoResponse postSolicitacaoBloqueioCartaoRequest(@PathVariable String id, @RequestBody @NotBlank String sistemaResponsavel);
+    SolicitacaoBloqueioCartaoResponse postSolicitacaoBloqueioCartaoRequest(@RequestBody @NotBlank String sistemaResponsavel, @PathVariable String id);
 
 }

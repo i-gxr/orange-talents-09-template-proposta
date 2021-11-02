@@ -161,6 +161,8 @@ services:
       API_CONSULTA_FINANCEIRA: http://analise:9999/api/solicitacao
       KEYCLOAK_ISSUER_URI: http://keycloak:8080/auth/realms/proposta
       KEYCLOAK_JWKS_URI: http://keycloak:8080/auth/realms/proposta/protocol/openid-connect/certs
+      APP_NAME: servico de proposta
+      ENVIRONMENT: prod
 
 volumes:
   grafana-volume:
