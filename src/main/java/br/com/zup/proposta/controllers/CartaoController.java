@@ -23,6 +23,9 @@ public class CartaoController {
     @Autowired
     private SolicitacaoBloqueioCartaoService solicitacaoBloqueioCartaoService;
 
+    @Autowired
+    private NotificarAvisoViagemService notificarAvisoViagemService;
+
     @PostMapping("/bloqueios")
     public void blockCard(@RequestHeader(value = "User-Agent") String userAgent, @RequestParam String numeroCartao, HttpServletRequest request) {
         Cartao cartao = repository.findById(numeroCartao).orElseThrow(CartaoNaoEncontradoException::new);
@@ -32,10 +35,13 @@ public class CartaoController {
             throw new CartaoBloqueadoException();
 
         try {
-            SolicitacaoBloqueioCartaoResponse response = solicitacaoBloqueioCartaoService.postSolicitacaoBloqueioCartaoRequest(numeroCartao, userAgent);
+            SolicitacaoBloqueioCartaoResponse response = solicitacaoBloqueioCartaoService.postSolicitacaoBloqueioCartaoRequest(numeroCartao, new SolicitacaoBloqueioCartaoRequest(userAgent));
             if (response.getResultado().equalsIgnoreCase("BLOQUEADO"))
                 cartao.addBloqueios(bloqueioCartao);
         }
+            catch (FeignException.UnprocessableEntity e) {
+                throw new CartaoBloqueadoException();
+            }
             catch (FeignException e) {
                 throw new ServicoNaoDisponivelException();
             }
@@ -47,7 +53,19 @@ public class CartaoController {
     public void notifyTravel(@RequestHeader(value = "User-Agent") String userAgent, @RequestParam String numeroCartao, @RequestBody @Valid AvisoCartaoRequest request, HttpServletRequest httpRequest) {
         Cartao cartao = repository.findById(numeroCartao).orElseThrow(CartaoNaoEncontradoException::new);
         AvisoCartao avisoCartao = request.toModel(userAgent, httpRequest.getRemoteAddr());
-        cartao.addAvisos(avisoCartao);
+
+        try {
+            NotificacaoAvisoCartaoResponse response = notificarAvisoViagemService.postNotificarAvisoViagemCartaoRequest(numeroCartao, request);
+            if (response.getResultado().equalsIgnoreCase("CRIADO"))
+                cartao.addAvisos(avisoCartao);
+        }
+            catch (FeignException.UnprocessableEntity e) {
+                throw new AvisoCartaoJaInformadoException();
+            }
+            catch (FeignException e) {
+                throw new ServicoNaoDisponivelException();
+            }
+
         repository.save(cartao);
     }
 

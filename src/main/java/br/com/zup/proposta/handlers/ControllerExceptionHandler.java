@@ -66,7 +66,7 @@ public class ControllerExceptionHandler {
         return response;
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ServicoNaoDisponivelException.class)
     public Map<String, String> handleServicoNaoDisponivelError(BussinessException e) {
         Map<String, String> response = new HashMap<>();
@@ -93,6 +93,14 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(CartaoBloqueadoException.class)
     public Map<String, String> handleCartaoBloqueadoError(BussinessException e) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message:", e.getMessage());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(AvisoCartaoJaInformadoException.class)
+    public Map<String, String> handleAvisoCartaoJaInformadoError(BussinessException e) {
         Map<String, String> response = new HashMap<>();
         response.put("message:", e.getMessage());
         return response;

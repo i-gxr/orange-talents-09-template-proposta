@@ -2,9 +2,6 @@ package br.com.zup.proposta.requests;
 
 import br.com.zup.proposta.models.*;
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.annotation.*;
-import com.fasterxml.jackson.datatype.jsr310.deser.*;
-import com.fasterxml.jackson.datatype.jsr310.ser.*;
 
 import javax.validation.constraints.*;
 import java.time.*;

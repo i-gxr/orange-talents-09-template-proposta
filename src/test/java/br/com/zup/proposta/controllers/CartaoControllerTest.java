@@ -40,6 +40,9 @@ class CartaoControllerTest {
     @MockBean
     private SolicitacaoBloqueioCartaoService solicitacaoBloqueioCartaoService;
 
+    @MockBean
+    private NotificarAvisoViagemService notificarAvisoViagemService;
+
     @Autowired
     private Gson gson;
 
@@ -98,7 +101,7 @@ class CartaoControllerTest {
     }
 
     @Test
-    void blockCardShouldReturnBadRequestWhenNotFoundUserAgentHeader() throws Exception {
+    void blockCardShouldReturnBadRequestStatusWhenNotFoundUserAgentHeader() throws Exception {
         String numeroCartao = "1921-1063-9349-1322";
 
         mockMvc.perform(MockMvcRequestBuilders.post(uri + "/bloqueios")
@@ -108,7 +111,7 @@ class CartaoControllerTest {
     }
 
     @Test
-    void blockCardShouldReturnBadRequestWhenNotFoundNumeroCartaoParam() throws Exception {
+    void blockCardShouldReturnBadRequestStatusWhenNotFoundNumeroCartaoParam() throws Exception {
         String userAgent = "PostmanRuntime/7.28.4";
 
         mockMvc.perform(MockMvcRequestBuilders.post(uri + "/bloqueios")
@@ -118,7 +121,7 @@ class CartaoControllerTest {
     }
 
     @Test
-    void blockCardShouldReturnInternalServerErrorWhenSolicitacaoBloqueioCartaoServiceNotAvailable() throws Exception {
+    void blockCardShouldReturnBadRequestStatusWhenSolicitacaoBloqueioCartaoServiceNotAvailable() throws Exception {
         String userAgent = "PostmanRuntime/7.28.4";
         String numeroCartao = "1921-1063-9349-1322";
         Cartao cartao = Mockito.mock(Cartao.class);
@@ -131,7 +134,7 @@ class CartaoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("numeroCartao", numeroCartao)
                 .header("User-Agent", userAgent)
-        ).andExpect(MockMvcResultMatchers.status().is(500));
+        ).andExpect(MockMvcResultMatchers.status().is(400));
     }
 
     @Test
@@ -146,6 +149,7 @@ class CartaoControllerTest {
                 .create();
 
         Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(cartao));
+        Mockito.when(notificarAvisoViagemService.postNotificarAvisoViagemCartaoRequest(Mockito.any(), Mockito.any())).thenReturn(new NotificacaoAvisoCartaoResponse("CRIADO"));
         Mockito.when(repository.save(Mockito.any())).thenReturn(Mockito.any(Cartao.class));
 
         mockMvc.perform(MockMvcRequestBuilders.post(uri + "/avisos")
@@ -265,6 +269,30 @@ class CartaoControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post(uri + "/avisos")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("User-Agent", userAgent)
+                .characterEncoding("utf-8")
+                .content(gson.toJson(request))
+        ).andExpect(MockMvcResultMatchers.status().is(400));
+    }
+
+    @Test
+    void notifyTravelShouldReturnBadRequestStatusWhenNotificarAvisoViagemServiceNotAvailable() throws Exception {
+        String userAgent = "PostmanRuntime/7.28.4";
+        String numeroCartao = "1921-1063-9349-1322";
+        Cartao cartao = Mockito.mock(Cartao.class);
+        AvisoCartaoRequest request = new AvisoCartaoRequest(LocalDate.now(), "Campos do Jordão");
+        FeignException feignException = Mockito.mock(FeignException.class);
+
+        Gson gson = new GsonBuilder().setPrettyPrinting()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
+
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(cartao));
+        Mockito.when(notificarAvisoViagemService.postNotificarAvisoViagemCartaoRequest(Mockito.any(), Mockito.any())).thenThrow(feignException);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(uri + "/avisos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("numeroCartao", numeroCartao)
                 .header("User-Agent", userAgent)
                 .characterEncoding("utf-8")
                 .content(gson.toJson(request))
