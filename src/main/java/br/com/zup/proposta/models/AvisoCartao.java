@@ -14,19 +14,33 @@ public class AvisoCartao {
     private Long id;
 
     @NotNull
+    @FutureOrPresent
     @Column(nullable = false)
-    private LocalDateTime validoAte;
+    private LocalDate validoAte;
 
     @NotBlank
     @Column(nullable = false)
     private String destino;
 
+    @Column(nullable = false)
+    private LocalDateTime notificadoEm = LocalDateTime.now();
+
+    @NotBlank
+    @Column(nullable = false)
+    private String userAgent;
+
+    @NotBlank
+    @Column(nullable = false)
+    private String ipSolicitante;
+
     @Deprecated
     public AvisoCartao() {}
 
-    public AvisoCartao(LocalDateTime validoAte, String destino) {
+    public AvisoCartao(LocalDate validoAte, String destino, String userAgent, String ipSolicitante) {
         this.validoAte = validoAte;
         this.destino = destino;
+        this.userAgent = userAgent;
+        this.ipSolicitante = ipSolicitante;
     }
 
     @Override
@@ -34,12 +48,12 @@ public class AvisoCartao {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AvisoCartao that = (AvisoCartao) o;
-        return Objects.equals(id, that.id) && Objects.equals(validoAte, that.validoAte) && Objects.equals(destino, that.destino);
+        return Objects.equals(validoAte, that.validoAte) && Objects.equals(destino, that.destino);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, validoAte, destino);
+        return Objects.hash(validoAte, destino);
     }
 
 }

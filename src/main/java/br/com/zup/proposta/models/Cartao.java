@@ -1,6 +1,7 @@
 package br.com.zup.proposta.models;
 
 import br.com.zup.proposta.exceptions.*;
+import br.com.zup.proposta.models.enums.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -51,6 +52,9 @@ public class Cartao {
     @OneToOne(mappedBy = "cartao")
     private Proposta proposta;
 
+    @Enumerated(EnumType.STRING)
+    private StatusCartao statusCartao = StatusCartao.DESBLOQUEADO;
+
     @Deprecated
     public Cartao() {}
 
@@ -80,6 +84,11 @@ public class Cartao {
         if (isBloqueado())
             throw new CartaoBloqueadoException();
         this.bloqueios.add(bloqueioCartao);
+        this.statusCartao = StatusCartao.BLOQUEADO;
+    }
+
+    public void addAvisos(AvisoCartao avisoCartao) {
+        this.avisos.add(avisoCartao);
     }
 
 }

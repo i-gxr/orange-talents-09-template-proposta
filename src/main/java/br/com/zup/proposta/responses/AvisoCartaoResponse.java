@@ -9,12 +9,12 @@ import java.util.*;
 public class AvisoCartaoResponse {
 
     @JsonProperty
-    private LocalDateTime validoAte;
+    private LocalDate validoAte;
 
     @JsonProperty
     private String destino;
 
-    public AvisoCartaoResponse(LocalDateTime validoAte, String destino) {
+    public AvisoCartaoResponse(LocalDate validoAte, String destino) {
         this.validoAte = validoAte;
         this.destino = destino;
     }
@@ -33,7 +33,7 @@ public class AvisoCartaoResponse {
     }
 
     public AvisoCartao toModel() {
-        return new AvisoCartao(this.validoAte, this.destino);
+        return new AvisoCartao(this.validoAte, this.destino, null, null);
     }
 
 }

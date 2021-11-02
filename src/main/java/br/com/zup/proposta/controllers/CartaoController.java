@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.*;
 import javax.validation.*;
-import javax.websocket.server.*;
 
 @RestController
 @RequestMapping("/api/cartoes")
@@ -41,6 +40,14 @@ public class CartaoController {
                 throw new ServicoNaoDisponivelException();
             }
 
+        repository.save(cartao);
+    }
+
+    @PostMapping("/avisos")
+    public void notifyTravel(@RequestHeader(value = "User-Agent") String userAgent, @RequestParam String numeroCartao, @RequestBody @Valid AvisoCartaoRequest request, HttpServletRequest httpRequest) {
+        Cartao cartao = repository.findById(numeroCartao).orElseThrow(CartaoNaoEncontradoException::new);
+        AvisoCartao avisoCartao = request.toModel(userAgent, httpRequest.getRemoteAddr());
+        cartao.addAvisos(avisoCartao);
         repository.save(cartao);
     }
 
