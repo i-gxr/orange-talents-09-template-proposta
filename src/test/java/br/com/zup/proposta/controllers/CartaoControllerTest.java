@@ -3,6 +3,7 @@ package br.com.zup.proposta.controllers;
 import br.com.zup.proposta.commons.utils.*;
 import br.com.zup.proposta.exceptions.*;
 import br.com.zup.proposta.models.*;
+import br.com.zup.proposta.models.enums.*;
 import br.com.zup.proposta.repositories.*;
 import br.com.zup.proposta.requests.*;
 import br.com.zup.proposta.responses.*;
@@ -42,6 +43,9 @@ class CartaoControllerTest {
 
     @MockBean
     private NotificarAvisoViagemService notificarAvisoViagemService;
+
+    @MockBean
+    private AssociarCarteiraCartaoService associarCarteiraCartaoService;
 
     @Autowired
     private Gson gson;
@@ -294,6 +298,118 @@ class CartaoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("numeroCartao", numeroCartao)
                 .header("User-Agent", userAgent)
+                .characterEncoding("utf-8")
+                .content(gson.toJson(request))
+        ).andExpect(MockMvcResultMatchers.status().is(400));
+    }
+
+    @Test
+    void connectWalletShouldReturnCreatedStatusWhenCarteiraRequestIsValid() throws Exception {
+        String numeroCartao = "1921-1063-9349-1322";
+        Cartao cartao = Mockito.mock(Cartao.class);
+        CarteiraCartao carteiraCartao = Mockito.mock(CarteiraCartao.class);
+        CarteiraCartaoRequest request = new CarteiraCartaoRequest("igor@email.com", EmissorCarteira.PAYPAL);
+
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(cartao));
+        Mockito.when(associarCarteiraCartaoService.postAssociarCarteiraCartaoRequest(Mockito.any(), Mockito.any())).thenReturn(new AssociarCarteiraCartaoResponse("ASSOCIADO", "123"));
+        Mockito.when(repository.saveAndFlush(cartao)).thenReturn(cartao);
+        Mockito.when(cartao.getCarteiraCartaoEqual(Mockito.any())).thenReturn(carteiraCartao);
+        Mockito.when(carteiraCartao.getId()).thenReturn(1L);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(uri + "/carteiras")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("numeroCartao", numeroCartao)
+                .characterEncoding("utf-8")
+                .content(gson.toJson(request))
+        ).andExpect(MockMvcResultMatchers.status().is(201)
+        ).andExpect(MockMvcResultMatchers.redirectedUrlPattern("http://localhost/api/cartoes/carteiras/{spring:[0-9]+}"));
+    }
+
+    @Test
+    void connectWalletShouldReturnNotFoundStatusWhenNumeroCartaoDoesNotExist() throws Exception {
+        String numeroCartao = "1921-1063-9349-1322";
+        CarteiraCartaoRequest request = new CarteiraCartaoRequest("igor@email.com", EmissorCarteira.PAYPAL);
+
+        Mockito.when(repository.findById(Mockito.any())).thenThrow(CartaoNaoEncontradoException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(uri + "/carteiras")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("numeroCartao", numeroCartao)
+                .characterEncoding("utf-8")
+                .content(gson.toJson(request))
+        ).andExpect(MockMvcResultMatchers.status().is(404));
+    }
+
+    @Test
+    void connectWalletShouldReturnBadRequestStatusWhenNotFoundNumeroCartaoParam() throws Exception {
+        CarteiraCartaoRequest request = new CarteiraCartaoRequest("igor@email.com", EmissorCarteira.PAYPAL);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(uri + "/carteiras")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("utf-8")
+                .content(gson.toJson(request))
+        ).andExpect(MockMvcResultMatchers.status().is(400));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void connectWalletShouldReturnBadRequestStatusWhenEmailIsInvalid(String email) throws Exception {
+        String numeroCartao = "1921-1063-9349-1322";
+        CarteiraCartaoRequest request = new CarteiraCartaoRequest(email, EmissorCarteira.PAYPAL);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(uri + "/carteiras")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("numeroCartao", numeroCartao)
+                .characterEncoding("utf-8")
+                .content(gson.toJson(request))
+        ).andExpect(MockMvcResultMatchers.status().is(400));
+    }
+
+    @ParameterizedTest
+    @NullSource
+    void connectWalletShouldReturnBadRequestStatusWhenCarteiraIsNull(EmissorCarteira carteira) throws Exception {
+        String numeroCartao = "1921-1063-9349-1322";
+        CarteiraCartaoRequest request = new CarteiraCartaoRequest("igor@email.com", carteira);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(uri + "/carteiras")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("numeroCartao", numeroCartao)
+                .characterEncoding("utf-8")
+                .content(gson.toJson(request))
+        ).andExpect(MockMvcResultMatchers.status().is(400));
+    }
+
+    @Test
+    void connectWalletShouldUnprocessableEntityStatusWhenCarteiraHasConnected() throws Exception {
+        String numeroCartao = "1921-1063-9349-1322";
+        Cartao cartao = Mockito.mock(Cartao.class);
+        FeignException.UnprocessableEntity exception = Mockito.mock(FeignException.UnprocessableEntity.class);
+        CarteiraCartaoRequest request = new CarteiraCartaoRequest("igor@email.com", EmissorCarteira.PAYPAL);
+
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(cartao));
+        Mockito.when(associarCarteiraCartaoService.postAssociarCarteiraCartaoRequest(Mockito.any(), Mockito.any())).thenThrow(exception);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(uri + "/carteiras")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("numeroCartao", numeroCartao)
+                .characterEncoding("utf-8")
+                .content(gson.toJson(request))
+        ).andExpect(MockMvcResultMatchers.status().is(422));
+    }
+
+    @Test
+    void connectWalletShouldBadRequestStatusWhenAssociarCarteiraCartaoServiceNotAvailable() throws Exception {
+        String numeroCartao = "1921-1063-9349-1322";
+        Cartao cartao = Mockito.mock(Cartao.class);
+        FeignException feignException = Mockito.mock(FeignException.class);
+        CarteiraCartaoRequest request = new CarteiraCartaoRequest("igor@email.com", EmissorCarteira.PAYPAL);
+
+        Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(cartao));
+        Mockito.when(associarCarteiraCartaoService.postAssociarCarteiraCartaoRequest(Mockito.any(), Mockito.any())).thenThrow(feignException);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(uri + "/carteiras")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("numeroCartao", numeroCartao)
                 .characterEncoding("utf-8")
                 .content(gson.toJson(request))
         ).andExpect(MockMvcResultMatchers.status().is(400));

@@ -76,6 +76,17 @@ public class Cartao {
         return numeroCartao;
     }
 
+    public Set<CarteiraCartao> getCarteiras() {
+        return carteiras;
+    }
+
+    public CarteiraCartao getCarteiraCartaoEqual(CarteiraCartao carteiraCartao) {
+        for (CarteiraCartao c : carteiras)
+            if (c.equals(carteiraCartao))
+                return c;
+        return null;
+    }
+
     public boolean isBloqueado() {
         return this.bloqueios.stream().anyMatch(BloqueioCartao::isAtivo);
     }
@@ -89,6 +100,10 @@ public class Cartao {
 
     public void addAvisos(AvisoCartao avisoCartao) {
         this.avisos.add(avisoCartao);
+    }
+
+    public void addCarteiras(CarteiraCartao carteiraCartao) {
+        this.carteiras.add(carteiraCartao);
     }
 
 }

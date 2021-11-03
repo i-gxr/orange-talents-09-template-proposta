@@ -8,10 +8,13 @@ import br.com.zup.proposta.responses.*;
 import br.com.zup.proposta.services.*;
 import feign.*;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.*;
 
 import javax.servlet.http.*;
 import javax.validation.*;
+import java.net.*;
 
 @RestController
 @RequestMapping("/api/cartoes")
@@ -25,6 +28,9 @@ public class CartaoController {
 
     @Autowired
     private NotificarAvisoViagemService notificarAvisoViagemService;
+
+    @Autowired
+    private AssociarCarteiraCartaoService associarCarteiraCartaoService;
 
     @PostMapping("/bloqueios")
     public void blockCard(@RequestHeader(value = "User-Agent") String userAgent, @RequestParam String numeroCartao, HttpServletRequest request) {
@@ -67,6 +73,32 @@ public class CartaoController {
             }
 
         repository.save(cartao);
+    }
+
+    @PostMapping("/carteiras")
+    public ResponseEntity<?> connectWallet(@RequestParam String numeroCartao, @RequestBody @Valid CarteiraCartaoRequest request) {
+        Cartao cartao = repository.findById(numeroCartao).orElseThrow(CartaoNaoEncontradoException::new);
+        CarteiraCartao carteiraCartao = request.toModel();
+
+        try {
+            AssociarCarteiraCartaoResponse response = associarCarteiraCartaoService.postAssociarCarteiraCartaoRequest(numeroCartao, request.toAssociarCarteiraCartaoRequest());
+            if (response.getResultado().equalsIgnoreCase("ASSOCIADA"))
+                cartao.addCarteiras(carteiraCartao);
+        }
+            catch (FeignException.UnprocessableEntity e) {
+                throw new CarteiraCartaoJaAssociadoException();
+            }
+            catch (FeignException e) {
+                throw new ServicoNaoDisponivelException();
+            }
+
+        repository.save(cartao);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequestUri()
+                .path("/{id}")
+                .buildAndExpand(cartao.getCarteiraCartaoEqual(carteiraCartao).getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
 }

@@ -20,8 +20,6 @@ public class BloqueioCartao {
     @Column(nullable = false)
     private String sistemaResponsavel;
 
-    @NotBlank
-    @Column(nullable = false)
     private String ipSolicitante;
 
     @Column(nullable = false)

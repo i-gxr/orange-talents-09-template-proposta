@@ -2,6 +2,7 @@ package br.com.zup.proposta.handlers;
 
 import br.com.zup.proposta.exceptions.*;
 import br.com.zup.proposta.exceptions.dto.validations.*;
+import com.fasterxml.jackson.databind.exc.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.*;
 import org.springframework.context.i18n.*;
@@ -101,6 +102,14 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(AvisoCartaoJaInformadoException.class)
     public Map<String, String> handleAvisoCartaoJaInformadoError(BussinessException e) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message:", e.getMessage());
+        return response;
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(CarteiraCartaoJaAssociadoException.class)
+    public Map<String, String> handleCarteiraCartaoJaAssociadoError(BussinessException e) {
         Map<String, String> response = new HashMap<>();
         response.put("message:", e.getMessage());
         return response;

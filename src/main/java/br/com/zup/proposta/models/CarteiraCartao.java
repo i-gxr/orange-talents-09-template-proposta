@@ -1,5 +1,7 @@
 package br.com.zup.proposta.models;
 
+import br.com.zup.proposta.models.enums.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.*;
@@ -10,7 +12,8 @@ import java.util.*;
 public class CarteiraCartao {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotBlank
     @Email
@@ -19,20 +22,23 @@ public class CarteiraCartao {
 
     @NotNull
     @Column(nullable = false)
-    private LocalDateTime associadoEm;
+    private LocalDateTime associadoEm = LocalDateTime.now();
 
-    @NotBlank
+    @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String emissor;
+    private EmissorCarteira emissor;
 
     @Deprecated
     public CarteiraCartao() {}
 
-    public CarteiraCartao(String id, String email, LocalDateTime associadoEm, String emissor) {
-        this.id = id;
+    public CarteiraCartao(String email, EmissorCarteira emissor) {
         this.email = email;
-        this.associadoEm = associadoEm;
         this.emissor = emissor;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     @Override
@@ -40,12 +46,12 @@ public class CarteiraCartao {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CarteiraCartao that = (CarteiraCartao) o;
-        return Objects.equals(id, that.id) && Objects.equals(email, that.email) && Objects.equals(associadoEm, that.associadoEm) && Objects.equals(emissor, that.emissor);
+        return emissor == that.emissor;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, associadoEm, emissor);
+        return Objects.hash(emissor);
     }
 
 }

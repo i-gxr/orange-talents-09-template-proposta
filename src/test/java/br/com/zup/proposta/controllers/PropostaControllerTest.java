@@ -74,7 +74,7 @@ class PropostaControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(gson.toJson(propostaRequest))
         ).andExpect(MockMvcResultMatchers.status().is(201)
-        ).andExpect(MockMvcResultMatchers.redirectedUrlPattern("http://localhost/api/propostas/*"));
+        ).andExpect(MockMvcResultMatchers.redirectedUrlPattern("http://localhost/api/propostas/{spring:[0-9]+}"));
     }
 
     @ParameterizedTest

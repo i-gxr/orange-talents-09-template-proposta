@@ -52,7 +52,7 @@ class BiometriaControllerTest {
                 .content(gson.toJson(request))
                 .param("numeroCartao", cartao.getNumeroCartao())
         ).andExpect(MockMvcResultMatchers.status().is(201)
-        ).andExpect(MockMvcResultMatchers.redirectedUrlPattern("http://localhost/api/biometrias/*"));
+        ).andExpect(MockMvcResultMatchers.redirectedUrlPattern("http://localhost/api/biometrias/{spring:[0-9]+}"));
     }
 
     @Test
