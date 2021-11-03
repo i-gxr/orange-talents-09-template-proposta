@@ -303,12 +303,13 @@ class CartaoControllerTest {
         ).andExpect(MockMvcResultMatchers.status().is(400));
     }
 
-    @Test
-    void connectWalletShouldReturnCreatedStatusWhenCarteiraRequestIsValid() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"PAYPAL", "SAMSUNG_PAY"})
+    void connectWalletShouldReturnCreatedStatusWhenCarteiraRequestIsValid(String carteira) throws Exception {
         String numeroCartao = "1921-1063-9349-1322";
         Cartao cartao = Mockito.mock(Cartao.class);
         CarteiraCartao carteiraCartao = Mockito.mock(CarteiraCartao.class);
-        CarteiraCartaoRequest request = new CarteiraCartaoRequest("igor@email.com", EmissorCarteira.PAYPAL);
+        CarteiraCartaoRequest request = new CarteiraCartaoRequest("igor@email.com", EmissorCarteira.valueOf(carteira));
 
         Mockito.when(repository.findById(Mockito.any())).thenReturn(Optional.of(cartao));
         Mockito.when(associarCarteiraCartaoService.postAssociarCarteiraCartaoRequest(Mockito.any(), Mockito.any())).thenReturn(new AssociarCarteiraCartaoResponse("ASSOCIADO", "123"));
