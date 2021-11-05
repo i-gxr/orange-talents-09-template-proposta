@@ -14,6 +14,7 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
+                        .antMatchers(HttpMethod.GET, "/actuator/prometheus").permitAll()
                         .antMatchers(HttpMethod.GET, "/propostas/**").hasAuthority("SCOPE_proposta-scope")
                         .antMatchers(HttpMethod.POST, "/propostas/**").hasAuthority("SCOPE_proposta-scope")
                         .antMatchers(HttpMethod.POST, "/biometrias/**").hasAuthority("SCOPE_proposta-scope")
