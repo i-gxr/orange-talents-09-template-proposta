@@ -125,7 +125,7 @@ class CartaoControllerTest {
     }
 
     @Test
-    void blockCardShouldReturnBadRequestStatusWhenSolicitacaoBloqueioCartaoServiceNotAvailable() throws Exception {
+    void blockCardShouldReturnServiceUnavailableStatusWhenSolicitacaoBloqueioCartaoServiceNotAvailable() throws Exception {
         String userAgent = "PostmanRuntime/7.28.4";
         String numeroCartao = "1921-1063-9349-1322";
         Cartao cartao = Mockito.mock(Cartao.class);
@@ -138,7 +138,7 @@ class CartaoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("numeroCartao", numeroCartao)
                 .header("User-Agent", userAgent)
-        ).andExpect(MockMvcResultMatchers.status().is(400));
+        ).andExpect(MockMvcResultMatchers.status().is(503));
     }
 
     @Test
@@ -280,7 +280,7 @@ class CartaoControllerTest {
     }
 
     @Test
-    void notifyTravelShouldReturnBadRequestStatusWhenNotificarAvisoViagemServiceNotAvailable() throws Exception {
+    void notifyTravelShouldReturnServiceUnavailableStatusWhenNotificarAvisoViagemServiceNotAvailable() throws Exception {
         String userAgent = "PostmanRuntime/7.28.4";
         String numeroCartao = "1921-1063-9349-1322";
         Cartao cartao = Mockito.mock(Cartao.class);
@@ -300,7 +300,7 @@ class CartaoControllerTest {
                 .header("User-Agent", userAgent)
                 .characterEncoding("utf-8")
                 .content(gson.toJson(request))
-        ).andExpect(MockMvcResultMatchers.status().is(400));
+        ).andExpect(MockMvcResultMatchers.status().is(503));
     }
 
     @ParameterizedTest
@@ -399,7 +399,7 @@ class CartaoControllerTest {
     }
 
     @Test
-    void connectWalletShouldBadRequestStatusWhenAssociarCarteiraCartaoServiceNotAvailable() throws Exception {
+    void connectWalletShouldServiceUnavailableStatusWhenAssociarCarteiraCartaoServiceNotAvailable() throws Exception {
         String numeroCartao = "1921-1063-9349-1322";
         Cartao cartao = Mockito.mock(Cartao.class);
         FeignException feignException = Mockito.mock(FeignException.class);
@@ -413,7 +413,7 @@ class CartaoControllerTest {
                 .param("numeroCartao", numeroCartao)
                 .characterEncoding("utf-8")
                 .content(gson.toJson(request))
-        ).andExpect(MockMvcResultMatchers.status().is(400));
+        ).andExpect(MockMvcResultMatchers.status().is(503));
     }
 
 }

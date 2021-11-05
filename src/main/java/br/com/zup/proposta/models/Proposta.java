@@ -1,5 +1,6 @@
 package br.com.zup.proposta.models;
 
+import br.com.zup.proposta.commons.utils.*;
 import br.com.zup.proposta.models.enums.*;
 import br.com.zup.proposta.responses.*;
 
@@ -21,6 +22,7 @@ public class Proposta {
 
     @NotBlank
     @Column(nullable = false)
+    @Convert(converter = EncryptConverter.class)
     private String documento;
 
     @NotBlank

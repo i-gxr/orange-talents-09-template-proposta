@@ -67,7 +67,7 @@ public class ControllerExceptionHandler {
         return response;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ExceptionHandler(ServicoNaoDisponivelException.class)
     public Map<String, String> handleServicoNaoDisponivelError(BussinessException e) {
         Map<String, String> response = new HashMap<>();
